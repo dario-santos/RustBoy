@@ -1,5 +1,6 @@
+mod cpu;
 
 fn main() 
 {
-    println!("Progress - 0%");
+    cpu::debug();
 }

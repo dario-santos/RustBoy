@@ -1,7 +1,7 @@
 [package]
 name = "rust_boy"
 version = "0.1.0"
-authors = ["Dário Santos <dariovfsantos@gmail.com>"]
+authors = ["Dário Santos <dariovfsantos@gmail.com>", "David Bugalho <naosei@naosei.mesmo>"]
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
