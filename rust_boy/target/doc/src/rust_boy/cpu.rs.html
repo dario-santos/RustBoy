@@ -65,6 +65,7 @@
 <span id="65">65</span>
 <span id="66">66</span>
 <span id="67">67</span>
+<span id="68">68</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Todo: CPU</span>
 <span class="comment">//  - Flags</span>
@@ -81,16 +82,17 @@
 <span class="comment">// |  4  |  cy  |  C  |     |</span>
 <span class="comment">// | 0-3 |  -   |  -  |     |</span>
 
-<span class="comment">// The registers of the LR35902 processor</span>
-<span class="comment">// </span>
-<span class="comment">// | Register | High | Low | Name/Functionality |</span>
-<span class="comment">// +:--------:+------+-----+--------------------+</span>
-<span class="comment">// |    AF    |  A   |  -  | Accumulator, Flags |</span>
-<span class="comment">// |    BC    |  B   |  C  | BC                 |</span>
-<span class="comment">// |    DE    |  D   |  E  | DE                 |</span>
-<span class="comment">// |    HL    |  H   |  L  | HL                 |</span>
-<span class="comment">// |    SP    |  -   |  -  | Stack Pointer      |</span>
-<span class="comment">// |    PC    |  -   |  -  | Program Counter    |</span>
+<span class="doccomment">/// The registers of the LR35902 processor</span>
+<span class="doccomment">/// </span>
+<span class="doccomment">/// | Register | High | Low | Name/Functionality |</span>
+<span class="doccomment">/// |:--------:|:----:|:---:|:-------------------|</span>
+<span class="doccomment">/// |    AF    |  A   |  F  | Accumulator/ Flags |</span>
+<span class="doccomment">/// |    BC    |  B   |  C  | BC                 |</span>
+<span class="doccomment">/// |    DE    |  D   |  E  | DE                 |</span>
+<span class="doccomment">/// |    HL    |  H   |  L  | HL                 |</span>
+<span class="doccomment">/// |    SP    |  -   |  -  | Stack Pointer      |</span>
+<span class="doccomment">/// |    PC    |  -   |  -  | Program Counter    |</span>
+<span class="doccomment">///</span>
 <span class="kw">struct</span> <span class="ident">Registers</span>{
   <span class="ident">af</span>: <span class="ident">u16</span>,
   <span class="ident">bc</span>: <span class="ident">u16</span>,

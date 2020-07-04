@@ -1,6 +1,8 @@
 mod cpu;
 
-fn main() 
+fn main()
 {
-    cpu::debug();
+    // Creates the cpu
+    let cpu = cpu::Cpu::new();
+    cpu.debug();
 }

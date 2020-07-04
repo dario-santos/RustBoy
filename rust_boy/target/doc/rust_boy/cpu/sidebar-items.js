@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["debug",""]],"static":[["REGISTER",""]],"struct":[["Registers",""]]});
+initSidebarItems({"mod":[["reg","This file contains the registers and their functions"]],"struct":[["Cpu","The CPU structure"]]});

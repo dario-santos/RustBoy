@@ -4,12 +4,16 @@
 <span id="4">4</span>
 <span id="5">5</span>
 <span id="6">6</span>
+<span id="7">7</span>
+<span id="8">8</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">mod</span> <span class="ident">cpu</span>;
 
-<span class="kw">fn</span> <span class="ident">main</span>() 
+<span class="kw">fn</span> <span class="ident">main</span>()
 {
-    <span class="ident">cpu</span>::<span class="ident">debug</span>();
+    <span class="comment">// Creates the cpu</span>
+    <span class="kw">let</span> <span class="ident">cpu</span> <span class="op">=</span> <span class="ident">cpu</span>::<span class="ident">Cpu</span>::<span class="ident">new</span>();
+    <span class="ident">cpu</span>.<span class="ident">debug</span>();
 }
 </pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../";window.currentCrate = "rust_boy";</script><script src="../../aliases.js"></script><script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script><script defer src="../../search-index.js"></script></body></html>
