@@ -9,6 +9,11 @@ A simple GameBoy, and possible GameBoy Color, emulator in Rust.
 - ```cpu/mod.rs``` -> The CPU file with the instructions;
 - ```cpu/reg.rs``` -> The file with the registers, of the CPU.
 
+# Cpu of GB
+
+The CPU as a clock speed of 4.194304MHz and a vertycal sync of 59.73. This means that the CPU executes (4194304 / 59.73) per second.
+
+4194304 / 59.73 = 70221.0614432 instructions
 
 # References
 

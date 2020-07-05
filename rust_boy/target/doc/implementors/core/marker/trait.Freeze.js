@@ -1,3 +1,0 @@
-(function() {var implementors = {};
-implementors["rust_boy"] = [{"text":"impl Freeze for <a class=\"struct\" href=\"rust_boy/cpu/struct.Cpu.html\" title=\"struct rust_boy::cpu::Cpu\">Cpu</a>","synthetic":true,"types":["rust_boy::cpu::Cpu"]},{"text":"impl Freeze for <a class=\"struct\" href=\"rust_boy/cpu/reg/struct.Registers.html\" title=\"struct rust_boy::cpu::reg::Registers\">Registers</a>","synthetic":true,"types":["rust_boy::cpu::reg::Registers"]}];
-if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
