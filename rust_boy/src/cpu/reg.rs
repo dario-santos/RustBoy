@@ -54,7 +54,7 @@ impl Registers {
   /// Prints the registers information
   pub fn debug(&self) {
     println!("Registers Debug: \n\n");
-
+    
     println!("|Register | Value  | High | Low  | ");
     println!("| \x1b[0;36mAF\x1b[0m      | {:#06x} | {:#04x} | {:#04x} |", self.get_af(), self.a, self.f);
     println!("| \x1b[0;36mBC\x1b[0m      | {:#06x} | {:#04x} | {:#04x} |", self.get_af(), self.b, self.c);
