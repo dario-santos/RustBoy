@@ -1,17 +1,17 @@
-;0x0;0x1;0x2;0x3;0x4;0x5;0x6;0x7;0x8;0x9;0xA;0xB;0xC;0xD;0xE;0xF
-0x0;NOP;LD BC, u16;LD (BC), A;;;;LD B, u8;;LD (u16), SP;;LD A, (BC);;;;LD C, u8;
-0x1;;LD DE, u16;LD (DE), A;;;;LD D, u8;;;;LD A, (DE);;;;LD E, u8;
-0x2;;LD HL, u16;LD (HL+), A;;;;LD H, u8;;;;LD A, (HL+);;;;LD L, u8;
-0x3;;LD SP, u16;LD (HL-), A;;;;LD (HL), u8;;;;LD A, (HL-);;;;LD A, u8;
-0x4;LD B, B;LD B, C;LD B, D;LD B, E;LD B, H;LD B, L;LD B, (HL);LD B, A;LD C, B;LD C, C;LD C, D;LD C, E;LD C, H;LD C, L;LD C, (HL);LD C, A
-0x5;LD D, B;LD D, C;LD D, D;LD D, E;LD D, H;LD D, L;LD D, (HL);LD D, A;LD E, B;LD E, C;LD E, D;LD E, E;LD E, H;LD E, L;LD E, (HL);LD E, A
-0x6;LD H, B;LD H, C;LD H, D;LD H, E;LD H, H;LD H, L;LD H, (HL);LD H, A;LD L, B;LD L, C;LD L, D;LD L, E;LD L, H;LD L, L;LD L, (HL);LD L, A
-0x7;LD (HL), B;LD (HL), C;LD (HL), D;LD (HL), E;LD (HL), H;LD (HL), L;;LD (HL), A;LD A, B;LD A, C;LD A, D;LD A, E;LD A, H;LD A, L;LD A, (HL);LD A, A
-0x8;;;;;;;;;;;;;;;;
-0x9;;;;;;;;;;;;;;;;
-0xA;AND A, B;AND A, C;AND A, D;AND A, E;AND A, H;AND A, L;AND A, (HL);AND A, A;XOR A, B;XOR A, C;XOR A, D;XOR A, E;XOR A, H;XOR A, L;XOR A, (HL);XOR A, A
-0xB;OR A, B;OR A, C;OR A, D;OR A, E;OR A, H;OR A, L;OR A, (HL);OR A, A;;;;;;;;
-0xC;;POP BC;;JP u16;;PUSH BC;;;;;;;;;;
-0xD;;POP DE;;;;PUSH DE;;;;;;;;;;
-0xE;LD (0xFF00+u8), A;POP HL;LD (0xFF00+C), A;;;PUSH HL;AND A, u8;;;JP HL;LD (u16), A;;;;XOR A, u8;
-0xF;LD A, (0xFF00+u8);;LD A, (0xFF00+C);;;PUSH AF;OR A, u8;;;LD SP, HL;LD A, (u16);;;;;
+,0x0,0x1,0x2,0x3,0x4,0x5,0x6,0x7,0x8,0x9,0xA,0xB,0xC,0xD,0xE,0xF
+0x0,NOP,LD BC, u16,LD (BC), A,LD B, u8,LD (u16), SP,LD A, (BC),LD C, u8,
+0x1,LD DE, u16,LD (DE), A,LD D, u8,LD A, (DE),LD E, u8,
+0x2,LD HL, u16,LD (HL+), A,LD H, u8,LD A, (HL+),LD L, u8,
+0x3,LD SP, u16,LD (HL-), A,LD (HL), u8,LD A, (HL-),LD A, u8,
+0x4,LD B, B,LD B, C,LD B, D,LD B, E,LD B, H,LD B, L,LD B, (HL),LD B, A,LD C, B,LD C, C,LD C, D,LD C, E,LD C, H,LD C, L,LD C, (HL),LD C, A
+0x5,LD D, B,LD D, C,LD D, D,LD D, E,LD D, H,LD D, L,LD D, (HL),LD D, A,LD E, B,LD E, C,LD E, D,LD E, E,LD E, H,LD E, L,LD E, (HL),LD E, A
+0x6,LD H, B,LD H, C,LD H, D,LD H, E,LD H, H,LD H, L,LD H, (HL),LD H, A,LD L, B,LD L, C,LD L, D,LD L, E,LD L, H,LD L, L,LD L, (HL),LD L, A
+0x7,LD (HL), B,LD (HL), C,LD (HL), D,LD (HL), E,LD (HL), H,LD (HL), L,LD (HL), A,LD A, B,LD A, C,LD A, D,LD A, E,LD A, H,LD A, L,LD A, (HL),LD A, A
+0x8,
+0x9,
+0xA,AND A, B,AND A, C,AND A, D,AND A, E,AND A, H,AND A, L,AND A, (HL),AND A, A,XOR A, B,XOR A, C,XOR A, D,XOR A, E,XOR A, H,XOR A, L,XOR A, (HL),XOR A, A
+0xB,OR A, B,OR A, C,OR A, D,OR A, E,OR A, H,OR A, L,OR A, (HL),OR A, A,
+0xC,POP BC,JP u16,PUSH BC,
+0xD,POP DE,PUSH DE,
+0xE,LD (0xFF00+u8), A,POP HL,LD (0xFF00+C), A,PUSH HL,AND A, u8,JP HL,LD (u16), A,XOR A, u8,
+0xF,LD A, (0xFF00+u8),LD A, (0xFF00+C),PUSH AF,OR A, u8,LD SP, HL,LD A, (u16),
