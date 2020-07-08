@@ -109,4 +109,30 @@ impl Registers {
     self.l = (value & 0x00FF) as u8;
     self.h = ((value & 0xFF00) >> 8) as u8;
   }
+
+  
+  /// Sets the ```zero``` flag
+  pub fn get_flag_zf(&mut self) -> u8 {
+    let tmp = self.f & 0b1000_0000;
+    tmp >> 7
+  }
+  
+  /// Sets the ```half carry``` flag
+  pub fn set_flag_h(&mut self, value: bool) {
+    self.f |= if value {0b0010_0000} else {0b0000_0000}
+  }
+
+  /// Sets the ```zero``` flag
+  pub fn set_flag_zf(&mut self, value: bool) {
+    self.f |= if value {0b1000_0000} else {0b0000_0000}
+  }
 }
+
+
+// | Bit | Name | Set | Clr | Explanation |
+// +-----+------+-----+-----+-------------+
+// |  7  |  zf  |  Z  |     |
+// |  6  |  n   |  -  |     |
+// |  5  |  h   |  -  |     |
+// |  4  |  cy  |  C  |     |
+// | 0-3 |  -   |  -  |     |

@@ -117,6 +117,37 @@ impl Cpu
       0xE5 => {let tmp = self.registers.get_hl(); self.push(tmp, ram); 4}, // PUSH HL
       0xF5 => {let tmp = self.registers.get_af(); self.push(tmp, ram); 4}, // PUSH AF
 
+      0xA0 => {self.registers.a &= self.registers.b; self.registers.f = 0b0010_0000; self.registers.set_flag_zf(self.registers.a == 0); 1}, // AND A, B
+      0xA1 => {self.registers.a &= self.registers.c; self.registers.f = 0b0010_0000; self.registers.set_flag_zf(self.registers.a == 0); 1}, // AND A, C
+      0xA2 => {self.registers.a &= self.registers.d; self.registers.f = 0b0010_0000; self.registers.set_flag_zf(self.registers.a == 0); 1}, // AND A, D
+      0xA3 => {self.registers.a &= self.registers.e; self.registers.f = 0b0010_0000; self.registers.set_flag_zf(self.registers.a == 0); 1}, // AND A, E
+      0xA4 => {self.registers.a &= self.registers.h; self.registers.f = 0b0010_0000; self.registers.set_flag_zf(self.registers.a == 0); 1}, // AND A, H
+      0xA5 => {self.registers.a &= self.registers.l; self.registers.f = 0b0010_0000; self.registers.set_flag_zf(self.registers.a == 0); 1}, // AND A, L
+      0xA6 => {self.registers.a &= ram[self.registers.get_hl() as usize]; self.registers.f = 0b0010_0000; self.registers.set_flag_zf(self.registers.a == 0); 2}, // AND A, (HL)
+      0xA7 => {self.registers.a &= self.registers.a; self.registers.f = 0b0010_0000; self.registers.set_flag_zf(self.registers.a == 0); 1}, // AND A, A      
+      0xE6 => {self.registers.pc += 1; self.registers.a &= ram[self.registers.pc as usize]; self.registers.f = 0b0010_0000; self.registers.set_flag_zf(self.registers.a == 0); 2}, // AND A, u8
+
+      0xA8 => {self.registers.a ^= self.registers.b; self.registers.f = 0b0000_0000; self.registers.set_flag_zf(self.registers.a == 0); 1}, // XOR A, B
+      0xA9 => {self.registers.a ^= self.registers.c; self.registers.f = 0b0000_0000; self.registers.set_flag_zf(self.registers.a == 0); 1}, // XOR A, C
+      0xAA => {self.registers.a ^= self.registers.d; self.registers.f = 0b0000_0000; self.registers.set_flag_zf(self.registers.a == 0); 1}, // XOR A, D
+      0xAB => {self.registers.a ^= self.registers.e; self.registers.f = 0b0000_0000; self.registers.set_flag_zf(self.registers.a == 0); 1}, // XOR A, E
+      0xAC => {self.registers.a ^= self.registers.h; self.registers.f = 0b0000_0000; self.registers.set_flag_zf(self.registers.a == 0); 1}, // XOR A, H
+      0xAD => {self.registers.a ^= self.registers.l; self.registers.f = 0b0000_0000; self.registers.set_flag_zf(self.registers.a == 0); 1}, // XOR A, L
+      0xAE => {self.registers.a ^= ram[self.registers.get_hl() as usize]; self.registers.f = 0b0000_0000; self.registers.set_flag_zf(self.registers.a == 0); 2}, // XOR A, (HL)
+      0xAF => {self.registers.a ^= self.registers.a; self.registers.f = 0b0000_0000; self.registers.set_flag_zf(self.registers.a == 0); 1}, // XOR A, A      
+      0xEE => {self.registers.pc += 1; self.registers.a ^= ram[self.registers.pc as usize]; self.registers.f = 0b0000_0000; self.registers.set_flag_zf(self.registers.a == 0); 2}, // XOR A, u8
+
+
+      0xB0 => {self.registers.a |= self.registers.b; self.registers.f = 0b0000_0000; self.registers.set_flag_zf(self.registers.a == 0); 1}, // OR A, B
+      0xB1 => {self.registers.a |= self.registers.c; self.registers.f = 0b0000_0000; self.registers.set_flag_zf(self.registers.a == 0); 1}, // OR A, C
+      0xB2 => {self.registers.a |= self.registers.d; self.registers.f = 0b0000_0000; self.registers.set_flag_zf(self.registers.a == 0); 1}, // OR A, D
+      0xB3 => {self.registers.a |= self.registers.e; self.registers.f = 0b0000_0000; self.registers.set_flag_zf(self.registers.a == 0); 1}, // OR A, E
+      0xB4 => {self.registers.a |= self.registers.h; self.registers.f = 0b0000_0000; self.registers.set_flag_zf(self.registers.a == 0); 1}, // OR A, H
+      0xB5 => {self.registers.a |= self.registers.l; self.registers.f = 0b0000_0000; self.registers.set_flag_zf(self.registers.a == 0); 1}, // OR A, L
+      0xB6 => {self.registers.a |= ram[self.registers.get_hl() as usize]; self.registers.f = 0b0000_0000; self.registers.set_flag_zf(self.registers.a == 0); 2}, // OR A, (HL)
+      0xB7 => {self.registers.a |= self.registers.a; self.registers.f = 0b0000_0000; self.registers.set_flag_zf(self.registers.a == 0); 1}, // OR A, A      
+      0xF6 => {self.registers.pc += 1; self.registers.a |= ram[self.registers.pc as usize]; self.registers.f = 0b0000_0000; self.registers.set_flag_zf(self.registers.a == 0); 2}, // OR A, u8
+
       _      => panic!("Opcode {:#04x} not implemented!", opcode),
     };
 
@@ -124,7 +155,6 @@ impl Cpu
 
     cicles
   }
-
 
   fn pop(&mut self, ram: &mut Vec<u8>) -> u16
   {
