@@ -1,0 +1,21 @@
+	Tabela de Opcodes Implementados															
+																
+	0x0	0x1	0x2	0x3	0x4	0x5	0x6	0x7	0x8	0x9	0xA	0xB	0xC	0xD	0xE	0xF
+0x0	NOP		LD (BC), A				LD C, u8				LD A, (BC)				LD C, u8	
+0x1			LD (DE), A				LD E, u8				LD A, (DE)				LD E, u8	
+0x2			LD (HL+), A				LD L, u8				LD A, (HL+)				LD L, u8	
+0x3			LD (HL-), A				LD A, u8				LD A, (HL-)				LD A, u8	
+0x4	LD B, B	LD B, C	LD B, D	LD B, E	LD B, H	LD B, L	LD B, (HL)	LD B, A	LD C, B	LD C, C	LD C, D	LD C, E	LD C, H	LD C, L	LD C, (HL)	LD C, A
+0x5	LD D, B	LD D, C	LD D, D	LD D, E	LD D, H	LD D, L	LD D, (HL)	LD D, A	LD E, B	LD E, C	LD E, D	LD E, E	LD E, H	LD E, L	LD E, (HL)	LD E, A
+0x6	LD H, B	LD H, C	LD H, D	LD H, E	LD H, H	LD H, L	LD H, (HL)	LD H, A	LD L, B	LD L, C	LD L, D	LD L, E	LD L, H	LD L, L	LD L, (HL)	LD L, A
+0x7	LD (HL), B	LD (HL), C	LD (HL), D	LD (HL), E	LD (HL), H	LD (HL), L		LD (HL), A	LD A, B	LD A, C	LD A, D	LD A, E	LD A, H	LD A, L	LD A, (HL)	LD A, A
+0x8																
+0x9																
+0xA																
+0xB																
+0xC		POP BC				PUSH BC										
+0xD		POP DE				PUSH DE										
+0xE		POP HL				PUSH HL										
+0xF						PUSH AF				LD SP, HL						
+																
+																
