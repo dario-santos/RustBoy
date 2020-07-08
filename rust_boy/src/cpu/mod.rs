@@ -4,6 +4,7 @@ mod reg;
 /// The CPU structure
 pub struct Cpu{
   pub registers : reg::Registers,
+  pub cb_prefix : bool,
 }
 
 impl Cpu
@@ -12,13 +13,34 @@ impl Cpu
   pub fn new() -> Cpu {
     Cpu{
       registers: reg::Registers::new(),
+      cb_prefix: false,
     }
   }
 
-  pub fn decode(&mut self, opcode: u8, ram: &mut Vec<u8>) -> u8
+  fn decode_cb(&mut self, opcode: u8, ram: &mut Vec<u8>) -> u8 {
+    panic!("Opcode {:#04x} not implemented!", opcode)
+  }
+  
+  fn decode(&mut self, opcode: u8, ram: &mut Vec<u8>) -> u8
   {
-    let cicles = match opcode{
+    match opcode{
       0x00 => 1, // NOP
+
+      0x01 => {self.registers.pc += 1; self.registers.b = ram[self.registers.pc as usize]; self.registers.pc += 1; self.registers.c = ram[self.registers.pc as usize]; 3}, // LD BC, (u16)
+      0x11 => {self.registers.pc += 1; self.registers.d = ram[self.registers.pc as usize]; self.registers.pc += 1; self.registers.e = ram[self.registers.pc as usize]; 3}, // LD DE, (u16)
+      0x21 => {self.registers.pc += 1; self.registers.h = ram[self.registers.pc as usize]; self.registers.pc += 1; self.registers.l = ram[self.registers.pc as usize]; 3}, // LD HL, (u16)
+      0x31 => {self.registers.pc += 1; let x = ram[self.registers.pc as usize]; self.registers.pc += 1; let y = ram[self.registers.pc as usize]; self.registers.sp = ((y as u16) << 8) | x as u16; 3}, // LD SP, (u16)
+
+      0x08 => {self.registers.pc += 1; ram[self.registers.pc as usize] = (self.registers.sp & 0x00FF) as u8; self.registers.pc += 1; ram[self.registers.pc as usize] = ((self.registers.sp & 0xFF00) >> 8) as u8; 5}, // LD (u16), SP
+
+      0xE0 => {self.registers.pc += 1; let x = (ram[self.registers.pc as usize] as u16) & 0xFF00; ram[x as usize] = self.registers.a; 3}, // LD (FF00+u8), A 
+      0xF0 => {self.registers.pc += 1; let x = (ram[self.registers.pc as usize] as u16) & 0xFF00; self.registers.a = ram[x as usize]; 3}, // LD A, (FF00+u8)
+      
+      0xE2 => {ram[((self.registers.c as u16) & 0xFF00) as usize] = self.registers.a; 2}, // LD (FF00+C), A
+      0xF2 => {self.registers.a = ram[((self.registers.c as u16) & 0xFF00) as usize]; 2}, // LD A, (FF00+C)
+
+      0xEA => {self.registers.pc += 1; let x = ram[self.registers.pc as usize]; self.registers.pc += 1; let y = ram[self.registers.pc as usize]; ram[(((y as u16) << 8) | x as u16) as usize] = self.registers.a; 4}, // LD (u16), A
+      0xFA => {self.registers.pc += 1; let x = ram[self.registers.pc as usize]; self.registers.pc += 1; let y = ram[self.registers.pc as usize]; self.registers.a = ram[(((y as u16) << 8) | x as u16) as usize]; 4}, // LD A, (u16)
 
       0x02 => {ram[self.registers.get_bc() as usize] = self.registers.a; 2}, // LD (BC), A
       0x12 => {ram[self.registers.get_de() as usize] = self.registers.a; 2}, // LD A, (DE)
@@ -101,7 +123,7 @@ impl Cpu
       0x7F => {self.registers.a = self.registers.a; 1}, // LD A, A
 
 
-      0xF9 => {self.registers.sp = self.registers.get_hl(); 1}, // LD SP, HL
+      0xF9 => {self.registers.sp = self.registers.get_hl(); 2}, // LD SP, HL
       
       0x0A => {self.registers.b = ram[self.registers.get_bc() as usize]; 2}, // LD A, (BC)
       0x1A => {self.registers.b = ram[self.registers.get_de() as usize]; 2}, // LD A, (DE)
@@ -148,8 +170,16 @@ impl Cpu
       0xB7 => {self.registers.a |= self.registers.a; self.registers.f = 0b0000_0000; self.registers.set_flag_zf(self.registers.a == 0); 1}, // OR A, A      
       0xF6 => {self.registers.pc += 1; self.registers.a |= ram[self.registers.pc as usize]; self.registers.f = 0b0000_0000; self.registers.set_flag_zf(self.registers.a == 0); 2}, // OR A, u8
 
+      0xC3 => {self.registers.pc += 1; let l = ram[self.registers.pc as usize]; self.registers.pc += 1; let h = ram[self.registers.pc as usize]; self.registers.pc = ((h as u16) << 8) | l as u16; 4}, // JP u16
+      0xE9 => {self.registers.pc = self.registers.get_hl(); 1}, // JP HL
+
       _      => panic!("Opcode {:#04x} not implemented!", opcode),
-    };
+    }
+  }
+
+  pub fn cicle(&mut self, opcode: u8, ram: &mut Vec<u8>) -> u8
+  {
+    let cicles = if self.cb_prefix {self.decode_cb(opcode, ram)} else {self.decode(opcode, ram)};
 
     self.registers.pc += 1;
 
@@ -166,7 +196,7 @@ impl Cpu
     ((y as u16) << 8) | x as u16
   }
 
-  fn push(&mut self, value: u16, ram: &mut Vec<u8>) -> u16
+  fn push(&mut self, value: u16, ram: &mut Vec<u8>)
   {
     let x = (value & 0x00FF) as u8;
     let y = ((value & 0xFF00) >> 8) as u8;
@@ -176,8 +206,6 @@ impl Cpu
     ram[self.registers.sp as usize] = y;
     self.registers.sp -= 0x01;
     ram[self.registers.sp as usize] = x;
-    
-    ((y as u16) << 8) | x as u16
   }
 
   /// Debugs the cpu information
@@ -186,4 +214,3 @@ impl Cpu
     self.registers.debug()
   }
 }
-

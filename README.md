@@ -15,6 +15,8 @@ The CPU as a clock speed of 4.194304MHz and a vertycal sync of 59.73. This means
 
 4194304 / 59.73 = 70221.0614432 instructions
 
+
+
 # References
 
  - [Collection of game boy test roms](https://github.com/retrio/gb-test-roms).

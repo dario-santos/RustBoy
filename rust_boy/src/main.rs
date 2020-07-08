@@ -2,8 +2,7 @@ extern crate sdl2;
 
 use std::env;
 use std::fs::File;
-use std::io::prelude::*;
-use std::{io, fmt};
+use std::io;
 use std::path::Path;
 use std::io::Read;
 
@@ -45,21 +44,28 @@ fn main() -> io::Result<()>
   let mut rom_buffer: Vec<u8> = Vec::new();
   
   rom_file.read_to_end(&mut rom_buffer)?;
-  
 
   let mut cpu = cpu::Cpu::new();
   
-  let mut ram : Vec<u8> = vec![0x0; 0xFFFF];
-  println!("Opcode: 0xC1");
-  cpu.debug();
 
+
+  let mut ram : Vec<u8> = vec![0x0; 0xFFFF];
+  cpu.debug();
+  
   let mut cpu_cicles = 0;
+
   loop{
+    let opcode = rom_buffer[cpu.registers.pc as usize];
+
     if cpu_cicles == 0 {
-      cpu_cicles += cpu.decode(rom_buffer[cpu.registers.pc as usize], &mut ram);
+      cpu_cicles += cpu.cicle(opcode, &mut rom_buffer);
     }
-    cpu.debug();
-    println!("CPU CICLES WAIT: {}", cpu_cicles);
+    
+    {
+      println!("Opcode: {:#04x}", opcode);
+      cpu.debug();
+      println!("CPU CICLES WAIT: {}", cpu_cicles);
+    }
     
     cpu_cicles -= 1;
   }

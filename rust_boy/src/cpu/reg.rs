@@ -57,6 +57,7 @@ impl Registers {
   pub fn debug(&self)
   {    
     println!("|Register | Value  | High | Low  |");
+    println!("| \x1b[0;36mBC\x1b[0m      | {:#06x} | {:#04x} | {:#04x} |", self.get_af(), self.a, self.f);
     println!("| \x1b[0;36mBC\x1b[0m      | {:#06x} | {:#04x} | {:#04x} |", self.get_bc(), self.b, self.c);
     println!("| \x1b[0;36mDE\x1b[0m      | {:#06x} | {:#04x} | {:#04x} |", self.get_de(), self.d, self.e);
     println!("| \x1b[0;36mHL\x1b[0m      | {:#06x} | {:#04x} | {:#04x} |", self.get_hl(), self.h, self.l);
