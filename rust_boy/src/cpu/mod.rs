@@ -139,6 +139,16 @@ impl Cpu
       0xE5 => {let tmp = self.registers.get_hl(); self.push(tmp, ram); 4}, // PUSH HL
       0xF5 => {let tmp = self.registers.get_af(); self.push(tmp, ram); 4}, // PUSH AF
 
+      0x80 => {self.add_u8(self.registers.b); 1}, // ADD A, B
+      0x81 => {self.add_u8(self.registers.c); 1}, // ADD A, C
+      0x82 => {self.add_u8(self.registers.d); 1}, // ADD A, D
+      0x83 => {self.add_u8(self.registers.e); 1}, // ADD A, E
+      0x84 => {self.add_u8(self.registers.h); 1}, // ADD A, H
+      0x85 => {self.add_u8(self.registers.l); 1}, // ADD A, L
+      0x86 => {self.add_u8(ram.get(self.registers.get_hl())); 2}, // ADD A, (HL)
+      0x87 => {self.add_u8(self.registers.a); 1}, // ADD A, A
+      0xC6 => {self.registers.pc += 1; self.add_u8(ram.get(self.registers.pc)); 2}, // ADD A, u8
+
       0xA0 => {self.registers.a &= self.registers.b; self.registers.f = 0b0010_0000; self.registers.set_flag_zf(self.registers.a == 0); 1}, // AND A, B
       0xA1 => {self.registers.a &= self.registers.c; self.registers.f = 0b0010_0000; self.registers.set_flag_zf(self.registers.a == 0); 1}, // AND A, C
       0xA2 => {self.registers.a &= self.registers.d; self.registers.f = 0b0010_0000; self.registers.set_flag_zf(self.registers.a == 0); 1}, // AND A, D
@@ -217,8 +227,37 @@ impl Cpu
       0x2D => {self.registers.l = self.dec_u8(self.registers.l); 1}, // DEC L
       0x3D => {self.registers.a = self.dec_u8(self.registers.a); 1}, // DEC A
       
+      0x2F => {self.registers.f |= 0b0110_0000; self.registers.a = !self.registers.a; 1} // CPL
+      0x3F => {let c = (!self.registers.get_flag_c()) & 1; self.registers.f = ((self.registers.f | 0b0000_0000) & 0b1000_0000) | (c << 4); 1} // CCF
+      0x37 => {self.registers.f = (self.registers.f | 0b0001_0000) & 0b1001_0000; 1} // SCF
+
       _      => panic!("Opcode {:#04x} not implemented!", opcode),
     }
+  }
+
+  /// Adds an u8 value to the A register
+  pub fn add_u8(&mut self, value: u8){
+    // New flag values: Z0HC ----
+  
+    // Clears the F register
+    self.registers.f &= 0b0;
+
+    // save old a value
+    let a = self.registers.a;
+  
+    self.registers.a = match self.registers.a.checked_add(value){
+      Some(v) => v, // NO OVERFLOW
+      None    => 0, // OVERFLOW
+    };
+  
+    // Sets the Zero flag
+    self.registers.set_flag_zf(value == 0x0);
+  
+    // Half Carry flag    
+    self.registers.set_flag_h((((value & 0xF) + (a & 0xF)) & 0x10) == 0x10);
+
+    // Carry Flag
+    self.registers.set_flag_c(((((value as u16 & 0xFF) + (a as u16 & 0xFF)) as u16) & 0x0100) == 0x0100);
   }
 
   /// Decrements an u16 value

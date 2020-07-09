@@ -49,14 +49,14 @@ fn run(path: &Path) -> io::Result<()>
     let opcode = ram.get(cpu.registers.pc);
 
     if cpu_cicles == 0 {
-      cpu_cicles += cpu.cicle(0x0B, &mut ram);
+      cpu_cicles += cpu.cicle(0x80, &mut ram);
     }
     
     println!{"Opcode: {:#04x}", opcode}
     cpu.debug();
     
     cpu_cicles -= 1;
-    sleep(Duration::from_secs(1));
+    //sleep(Duration::from_secs(1));
 };
 
   Ok(())

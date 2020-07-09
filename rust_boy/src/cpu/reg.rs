@@ -114,7 +114,6 @@ impl Registers {
     self.l = (value & 0x00FF) as u8;
     self.h = ((value & 0xFF00) >> 8) as u8;
   }
-
   
   /// Returns the ```zero``` flag
   pub fn get_flag_zf(&self) -> u8 {
@@ -140,14 +139,20 @@ impl Registers {
     tmp >> 4
   }
   
+  
+  /// Sets the ```zero``` flag
+  pub fn set_flag_zf(&mut self, value: bool) {
+    self.f |= if value {0b1000_0000} else {0b0000_0000}
+  }
+
   /// Sets the ```half carry``` flag
   pub fn set_flag_h(&mut self, value: bool) {
     self.f |= if value {0b0010_0000} else {0b0000_0000}
   }
 
-  /// Sets the ```zero``` flag
-  pub fn set_flag_zf(&mut self, value: bool) {
-    self.f |= if value {0b1000_0000} else {0b0000_0000}
+  /// Sets the ```carry``` flag
+  pub fn set_flag_c(&mut self, value: bool) {
+    self.f |= if value {0b0001_0000} else {0b0000_0000}
   }
 }
 
