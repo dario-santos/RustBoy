@@ -189,13 +189,97 @@ impl Cpu
 
       0xC9 => {self.registers.pc = self.pop(ram); 4},  // RET
 
-      // TODO
-      0x1C => {self.registers.e += 1; self.registers.set_flag_zf(self.registers.e == 0); 1}, // INC E
-
-
+      0x03 => {self.registers.set_bc(self.inc_u16(self.registers.get_bc())); 2}, // INC BC
+      0x13 => {self.registers.set_de(self.inc_u16(self.registers.get_de())); 2}, // INC DE
+      0x23 => {self.registers.set_hl(self.inc_u16(self.registers.get_hl())); 2}, // INC HL
+      0x33 => {self.registers.sp = self.inc_u16(self.registers.sp); 2}, // INC SP
+      
+      0x04 => {self.registers.b = self.inc_u8(self.registers.b); 1}, // INC B
+      0x14 => {self.registers.d = self.inc_u8(self.registers.d); 1}, // INC D
+      0x24 => {self.registers.h = self.inc_u8(self.registers.h); 1}, // INC H
+      0x34 => {let tmp = ram.get(self.registers.get_hl()); ram.set(self.registers.get_hl(), self.inc_u8(tmp)); 3}, // INC (HL)
+      0x0C => {self.registers.c = self.inc_u8(self.registers.c); 1}, // INC C
+      0x1C => {self.registers.e = self.inc_u8(self.registers.e); 1}, // INC E
+      0x2C => {self.registers.l = self.inc_u8(self.registers.l); 1}, // INC L
+      0x3C => {self.registers.a = self.inc_u8(self.registers.a); 1}, // INC A
+      
+      0x0B => {self.registers.set_bc(self.dec_u16(self.registers.get_bc())); 2}, // DEC BC
+      0x1B => {self.registers.set_de(self.dec_u16(self.registers.get_de())); 2}, // DEC DE
+      0x2B => {self.registers.set_hl(self.dec_u16(self.registers.get_hl())); 2}, // DEC HL
+      0x3B => {self.registers.sp = self.dec_u16(self.registers.sp); 2}, // DEC SP
+      
+      0x05 => {self.registers.b = self.dec_u8(self.registers.b); 1}, // DEC B
+      0x15 => {self.registers.d = self.dec_u8(self.registers.d); 1}, // DEC D
+      0x25 => {self.registers.h = self.dec_u8(self.registers.h); 1}, // DEC H
+      0x35 => {let tmp = ram.get(self.registers.get_hl()); ram.set(self.registers.get_hl(), self.dec_u8(tmp)); 3}, // DEC (HL)
+      0x0D => {self.registers.c = self.dec_u8(self.registers.c); 1}, // DEC C
+      0x1D => {self.registers.e = self.dec_u8(self.registers.e); 1}, // DEC E
+      0x2D => {self.registers.l = self.dec_u8(self.registers.l); 1}, // DEC L
+      0x3D => {self.registers.a = self.dec_u8(self.registers.a); 1}, // DEC A
+      
       _      => panic!("Opcode {:#04x} not implemented!", opcode),
     }
   }
+
+  /// Decrements an u16 value
+  pub fn dec_u16(&self, value: u16) -> u16{
+    match value.checked_sub(1){
+      Some(v) => v, // NO OVERFLOW
+      None    => 0, // OVERFLOW
+    }
+  }
+
+  /// Increments an u16 value
+  pub fn inc_u16(&self, value: u16) -> u16{
+    match value.checked_add(1){
+      Some(v) => v, // NO OVERFLOW
+      None    => 0, // OVERFLOW
+    }
+  }
+
+  /// Increments an u8 value
+  pub fn inc_u8(&mut self, value: u8) -> u8{
+    // New flag values: Z0H- ----
+
+    // Clears the F register but keeps the carry value
+    self.registers.f &= 0b0001_0000;
+
+    let result = match value.checked_add(1){
+      Some(v) => v, // NO OVERFLOW
+      None    => 0, // OVERFLOW
+    };
+
+    // Sets the Zero flag
+    self.registers.set_flag_zf(value == 0x0);
+
+    // Half Carry flag    
+    self.registers.set_flag_h((((1 & 0xf) + (value & 0xf)) & 0x10) == 0x10);
+
+    result
+  }
+
+    /// Decrements an u8 value
+    pub fn dec_u8(&mut self, value: u8) -> u8{
+      // New flag values: Z1H- ----
+  
+      // Clears the F register but keeps the carry value
+      self.registers.f &= 0b0001_0000;
+      // Sets the sub flag as 1
+      self.registers.f |= 0b0100_0000;
+  
+      let result = match value.checked_sub(1){
+        Some(v) => v, // NO OVERFLOW
+        None    => 0, // OVERFLOW
+      };
+  
+      // Sets the Zero flag
+      self.registers.set_flag_zf(value == 0x0);
+  
+      // Half Carry flag    
+      self.registers.set_flag_h((((1 & 0xf) + (value & 0xf)) & 0x10) == 0x10);
+  
+      result
+    }
 
   pub fn cicle(&mut self, opcode: u8, ram: &mut memory::Memory) -> u8
   {

@@ -57,12 +57,15 @@ impl Registers {
   pub fn debug(&self)
   {    
     println!("|Register | Value  | High | Low  |");
-    println!("| \x1b[0;36mBC\x1b[0m      | {:#06x} | {:#04x} | {:#04x} |", self.get_af(), self.a, self.f);
+    println!("| \x1b[0;36mAF\x1b[0m      | {:#06x} | {:#04x} | {:#010b} |", self.get_af(), self.a, self.f);
     println!("| \x1b[0;36mBC\x1b[0m      | {:#06x} | {:#04x} | {:#04x} |", self.get_bc(), self.b, self.c);
     println!("| \x1b[0;36mDE\x1b[0m      | {:#06x} | {:#04x} | {:#04x} |", self.get_de(), self.d, self.e);
     println!("| \x1b[0;36mHL\x1b[0m      | {:#06x} | {:#04x} | {:#04x} |", self.get_hl(), self.h, self.l);
     println!("| \x1b[0;36mPC\x1b[0m      | {:#06x} | ---- | ---- |", self.pc);
     println!("| \x1b[0;36mSP\x1b[0m      | {:#06x} | ---- | ---- |", self.sp);
+
+    println!("\n| Z | N | H | C |");
+    println!("| {} | {} | {} | {} |", self.get_flag_zf(), self.get_flag_n(), self.get_flag_h(), self.get_flag_c());
   }
   
 
@@ -114,13 +117,25 @@ impl Registers {
 
   
   /// Returns the ```zero``` flag
-  pub fn get_flag_zf(&mut self) -> u8 {
+  pub fn get_flag_zf(&self) -> u8 {
     let tmp = self.f & 0b1000_0000;
     tmp >> 7
   }
 
+  /// Returns the ```add/sub``` flag
+  pub fn get_flag_n(&self) -> u8 {
+    let tmp = self.f & 0b0100_0000;
+    tmp >> 6
+  }
+
+  /// Returns the ```half carry``` flag
+  pub fn get_flag_h(&self) -> u8 {
+    let tmp = self.f & 0b0010_0000;
+    tmp >> 5
+  }
+
   /// Returns the ```carry``` flag
-  pub fn get_flag_c(&mut self) -> u8 {
+  pub fn get_flag_c(&self) -> u8 {
     let tmp = self.f & 0b0001_0000;
     tmp >> 4
   }
