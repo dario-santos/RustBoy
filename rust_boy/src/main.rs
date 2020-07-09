@@ -1,10 +1,14 @@
 mod cpu;
 mod gpu;
 mod memory;
+mod cartridge;
 
 extern crate sdl2;
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
+
+use std::time::{Duration, SystemTime};
+use std::thread::sleep;
 
 use std::env;
 use std::fs::File;
@@ -12,16 +16,14 @@ use std::io;
 use std::path::Path;
 use std::io::Read;
 
-
 fn run(path: &Path) -> io::Result<()>
-{
-  // Reads rom file
-  let mut rom_file = File::open(path)?;
-  // Create the buffer
-  let mut rom_buffer: Vec<u8> = Vec::new();
-  rom_file.read_to_end(&mut rom_buffer)?;
+{  
+  // Loads cartridge
+  let cart: cartridge::Cartridge = cartridge::Cartridge::load(path);
+  cart.debug();
+  
   // Creates Memory
-  let mut ram : memory::Memory = memory::Memory::new(rom_buffer);
+  let mut ram : memory::Memory = memory::Memory::new(cart);
   
   // Creates CPU
   let mut cpu = cpu::Cpu::new();
@@ -29,7 +31,7 @@ fn run(path: &Path) -> io::Result<()>
 
   // Create Display
   let sdl_context = sdl2::init().unwrap();
-  let mut canvas = gpu::Display::new(&sdl_context, 160, 144);
+  let mut gpu = gpu::Display::new(&sdl_context, 160, 144);
   let mut event_pump = sdl_context.event_pump().unwrap();
 
   'running: loop {
@@ -38,28 +40,23 @@ fn run(path: &Path) -> io::Result<()>
         Event::Quit {..} | Event::KeyDown { keycode: Some(Keycode::Escape), .. } => {
           break 'running
         },
-        // skip mouse motion intentionally because of the verbose it might cause.
-        Event::MouseMotion {..} => {},
-        e => {
-          println!("{:?}", e);
-        }
+        _ => {}, // ignore all other events
       }
     }
 
-    canvas.clear();
-    canvas.present();
+    gpu.draw();
     
     let opcode = ram.get(cpu.registers.pc);
 
     if cpu_cicles == 0 {
-      //cpu_cicles += cpu.cicle(opcode, &mut ram);
+      cpu_cicles += cpu.cicle(opcode, &mut ram);
     }
     
-    println!("Opcode: {:#04x}", opcode);
-    //cpu.debug();
-    println!("CPU CICLES WAIT: {}", cpu_cicles);
+    println!{"Opcode: {:#06x}", opcode}
+    cpu.debug();
     
-    //cpu_cicles -= 1;
+    cpu_cicles -= 1;
+    sleep(Duration::from_secs(1));
 };
 
   Ok(())

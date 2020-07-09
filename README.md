@@ -29,7 +29,7 @@ The CPU as a clock speed of 4.194304MHz and a vertycal sync of 59.73. This means
 |     I/O     |
 |             |
 +-------------+ 0xFF00
-|     ---     |
+| Not in Use  |
 +-------------+ 0xFEA0
 |             |
 |     OAM     |
@@ -61,5 +61,5 @@ The CPU as a clock speed of 4.194304MHz and a vertycal sync of 59.73. This means
 
 
 # References
-
+ - [Opcode Table](https://izik1.github.io/gbops/index.html);
  - [Collection of game boy test roms](https://github.com/retrio/gb-test-roms).

@@ -49,7 +49,7 @@ impl Registers {
       l: 0x4D,
       sp: 0xFFFE,
       stack: vec![0xFFFE],
-      pc: 0x0104,
+      pc: 0x0100,
     }
   }
 
@@ -68,8 +68,8 @@ impl Registers {
 
   /// Returns the ```AF``` register
   pub fn get_af(&self) -> u16 {
-    // AF = (A << 8) | F
-    ((self.a as u16) << 8) | (self.f as u16)
+    // F & 0xF0 to keep the lower 4 bits of ```F``` as zero
+    ((self.a as u16) << 8) | ((self.f & 0xF0) as u16)
   }
 
   /// Returns the ```BC``` register
@@ -89,7 +89,8 @@ impl Registers {
 
   /// Sets the ```AF``` register
   pub fn set_af(&mut self, value: u16) {
-    self.f = (value & 0x00FF) as u8;
+    // 0x00F0 to keep the lower 4 bits of ```F``` as zero
+    self.f = (value & 0x00F0) as u8;
     self.a = ((value & 0xFF00) >> 8) as u8;
   }
 
@@ -112,10 +113,16 @@ impl Registers {
   }
 
   
-  /// Sets the ```zero``` flag
+  /// Returns the ```zero``` flag
   pub fn get_flag_zf(&mut self) -> u8 {
     let tmp = self.f & 0b1000_0000;
     tmp >> 7
+  }
+
+  /// Returns the ```carry``` flag
+  pub fn get_flag_c(&mut self) -> u8 {
+    let tmp = self.f & 0b0001_0000;
+    tmp >> 4
   }
   
   /// Sets the ```half carry``` flag

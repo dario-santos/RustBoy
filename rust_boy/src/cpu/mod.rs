@@ -132,6 +132,7 @@ impl Cpu
       0xC1 => {let tmp = self.pop(ram); self.registers.set_bc(tmp); 3}, // POP BC
       0xD1 => {let tmp = self.pop(ram); self.registers.set_de(tmp); 3}, // POP DE
       0xE1 => {let tmp = self.pop(ram); self.registers.set_hl(tmp); 3}, // POP HL
+      0xF1 => {let tmp = self.pop(ram); self.registers.set_af(tmp); 3}, // POP AF
 
       0xC5 => {let tmp = self.registers.get_bc(); self.push(tmp, ram); 4}, // PUSH BC
       0xD5 => {let tmp = self.registers.get_de(); self.push(tmp, ram); 4}, // PUSH DE
@@ -158,7 +159,6 @@ impl Cpu
       0xAF => {self.registers.a ^= self.registers.a; self.registers.f = 0b0000_0000; self.registers.set_flag_zf(self.registers.a == 0); 1}, // XOR A, A      
       0xEE => {self.registers.pc += 1; self.registers.a ^= ram.get(self.registers.pc); self.registers.f = 0b0000_0000; self.registers.set_flag_zf(self.registers.a == 0); 2}, // XOR A, u8
 
-
       0xB0 => {self.registers.a |= self.registers.b; self.registers.f = 0b0000_0000; self.registers.set_flag_zf(self.registers.a == 0); 1}, // OR A, B
       0xB1 => {self.registers.a |= self.registers.c; self.registers.f = 0b0000_0000; self.registers.set_flag_zf(self.registers.a == 0); 1}, // OR A, C
       0xB2 => {self.registers.a |= self.registers.d; self.registers.f = 0b0000_0000; self.registers.set_flag_zf(self.registers.a == 0); 1}, // OR A, D
@@ -171,6 +171,27 @@ impl Cpu
 
       0xC3 => {self.registers.pc += 1; let l = ram.get(self.registers.pc); self.registers.pc += 1; let h = ram.get(self.registers.pc); self.registers.pc = ((h as u16) << 8) | l as u16; 4}, // JP u16
       0xE9 => {self.registers.pc = self.registers.get_hl(); 1}, // JP HL
+
+      0x20 => {self.registers.pc += 1; let e = ram.get(self.registers.pc); let cicles = if self.registers.get_flag_zf() == 0 {self.registers.pc = if (e & 0b1000_0000) >> 7 == 1 {self.registers.pc - ((e & 0b0111_1111) as u16)} else {self.registers.pc + ((e & 0b0111_1111) as u16)}; 3} else {2}; cicles}, // JR NZ, i8
+      0x30 => {self.registers.pc += 1; let e = ram.get(self.registers.pc); let cicles = if self.registers.get_flag_c() == 0 {self.registers.pc = if (e & 0b1000_0000) >> 7 == 1 {self.registers.pc - ((e & 0b0111_1111) as u16)} else {self.registers.pc + ((e & 0b0111_1111) as u16)}; 3} else {2}; cicles},  // JR NC, i8
+
+      0x18 => {self.registers.pc += 1; let e = ram.get(self.registers.pc); self.registers.pc = if (e & 0b1000_0000) >> 7 == 1 {self.registers.pc - ((e & 0b0111_1111) as u16)} else {self.registers.pc + ((e & 0b0111_1111) as u16)}; 3}, // JR Z, i8
+      0x28 => {self.registers.pc += 1; let e = ram.get(self.registers.pc); let cicles = if self.registers.get_flag_zf() == 1 {self.registers.pc = if (e & 0b1000_0000) >> 7 == 1 {self.registers.pc - ((e & 0b0111_1111) as u16)} else {self.registers.pc + ((e & 0b0111_1111) as u16)}; 3} else {2}; cicles}, // JR Z, i8
+      0x38 => {self.registers.pc += 1; let e = ram.get(self.registers.pc); let cicles = if self.registers.get_flag_c() == 1 {self.registers.pc = if (e & 0b1000_0000) >> 7 == 1 {self.registers.pc - ((e & 0b0111_1111) as u16)} else {self.registers.pc + ((e & 0b0111_1111) as u16)}; 3} else {2}; cicles},  // JR C, i8
+
+      0xC2 => {self.registers.pc += 1; let l = ram.get(self.registers.pc); self.registers.pc += 1; let h = ram.get(self.registers.pc); let cicles = if self.registers.get_flag_zf() == 0 {self.registers.pc = ((h as u16) << 8) | l as u16; 4} else {3}; cicles}, // JP NZ, u16
+      0xD2 => {self.registers.pc += 1; let l = ram.get(self.registers.pc); self.registers.pc += 1; let h = ram.get(self.registers.pc); let cicles = if self.registers.get_flag_c() == 0 {self.registers.pc = ((h as u16) << 8) | l as u16; 4} else {3}; cicles},  // JP NC, u16
+     
+      0xCA => {self.registers.pc += 1; let l = ram.get(self.registers.pc); self.registers.pc += 1; let h = ram.get(self.registers.pc); let cicles = if self.registers.get_flag_zf() == 1 {self.registers.pc = ((h as u16) << 8) | l as u16; 4} else {3}; cicles}, // JP Z, u16
+      0xDA => {self.registers.pc += 1; let l = ram.get(self.registers.pc); self.registers.pc += 1; let h = ram.get(self.registers.pc); let cicles = if self.registers.get_flag_c() == 1 {self.registers.pc = ((h as u16) << 8) | l as u16; 4} else {3}; cicles},  // JP C, u16
+     
+      0xCD => {self.registers.pc += 1; let l = ram.get(self.registers.pc); self.registers.pc += 1; let h = ram.get(self.registers.pc); self.push(self.registers.pc, ram); self.registers.pc = ((h as u16) << 8) | l as u16; 6},  // CALL u16
+
+      0xC9 => {self.registers.pc = self.pop(ram); 4},  // RET
+
+      // TODO
+      0x1C => {self.registers.e += 1; self.registers.set_flag_zf(self.registers.e == 0); 1}, // INC E
+
 
       _      => panic!("Opcode {:#04x} not implemented!", opcode),
     }

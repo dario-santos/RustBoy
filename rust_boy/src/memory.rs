@@ -1,6 +1,8 @@
+use crate::cartridge;
+
 pub struct Memory
 {
-  rom:          Vec<u8>,
+  cart:         cartridge::Cartridge,
   vram:         Vec<u8>,
   external_ram: Vec<u8>,
   wram_bank0:   Vec<u8>,
@@ -13,9 +15,9 @@ pub struct Memory
 }
 
 impl Memory{
-  pub fn new(cartridge: Vec<u8>) -> Memory{
+  pub fn new(cartridge: cartridge::Cartridge) -> Memory{
     Memory{
-      rom:          cartridge,
+      cart:          cartridge,
       vram:         vec![0x0; 0x2000],
       external_ram: vec![0x0; 0x2000],
       wram_bank0:   vec![0x0; 0x1000],
@@ -31,7 +33,7 @@ impl Memory{
   /// Gets the correct position in memory
   pub fn get(&self, position: u16) -> u8{
     match position{
-      0x0000 ..= 0x7FFF => self.rom[position as usize],
+      0x0000 ..= 0x7FFF => self.cart.rom[position as usize],
       0x8000 ..= 0x9FFF => self.vram[(position - 0x8000) as usize],
       0xA000 ..= 0xBFFF => self.external_ram[(position - 0xA000) as usize],
       0xC000 ..= 0xCFFF => self.wram_bank0[(position - 0xC000) as usize],
@@ -49,7 +51,7 @@ impl Memory{
   /// Sets the correct position in memory
   pub fn set(&mut self, position: u16, value: u8){
     match position{
-      0x0000 ..= 0x7FFF => self.rom[position as usize] = value,
+      0x0000 ..= 0x7FFF => self.cart.rom[position as usize] = value,
       0x8000 ..= 0x9FFF => self.vram[(position - 0x8000) as usize] = value,
       0xA000 ..= 0xBFFF => self.external_ram[(position - 0xA000) as usize] = value,
       0xC000 ..= 0xCFFF => self.wram_bank0[(position - 0xC000) as usize] = value,
