@@ -49,7 +49,7 @@ fn run(path: &Path) -> io::Result<()>
     let opcode = ram.get(cpu.registers.pc);
 
     if cpu_cicles == 0 {
-      cpu_cicles += cpu.cicle(0x80, &mut ram);
+      cpu_cicles += cpu.cicle(opcode, &mut ram);
     }
     
     println!{"Opcode: {:#04x}", opcode}

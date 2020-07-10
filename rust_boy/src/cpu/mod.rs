@@ -121,7 +121,6 @@ impl Cpu
       0x7E => {self.registers.a = ram.get(self.registers.get_hl()); 2}, // LD A, (HL)
       0x7F => {self.registers.a = self.registers.a; 1}, // LD A, A
 
-
       0xF9 => {self.registers.sp = self.registers.get_hl(); 2}, // LD SP, HL
       
       0x0A => {self.registers.b = ram.get(self.registers.get_bc()); 2}, // LD A, (BC)
@@ -196,9 +195,18 @@ impl Cpu
       0xDA => {self.registers.pc += 1; let l = ram.get(self.registers.pc); self.registers.pc += 1; let h = ram.get(self.registers.pc); let cicles = if self.registers.get_flag_c() == 1 {self.registers.pc = ((h as u16) << 8) | l as u16; 4} else {3}; cicles},  // JP C, u16
      
       0xCD => {self.registers.pc += 1; let l = ram.get(self.registers.pc); self.registers.pc += 1; let h = ram.get(self.registers.pc); self.push(self.registers.pc, ram); self.registers.pc = ((h as u16) << 8) | l as u16; 6},  // CALL u16
-
+            
       0xC9 => {self.registers.pc = self.pop(ram); 4},  // RET
-
+      
+      0xC7 => {self.push(self.registers.pc, ram); self.registers.pc = 0x00; 4}, // RST 0x00
+      0xD7 => {self.push(self.registers.pc, ram); self.registers.pc = 0x10; 4}, // RST 0x10
+      0xE7 => {self.push(self.registers.pc, ram); self.registers.pc = 0x20; 4}, // RST 0x20
+      0xF7 => {self.push(self.registers.pc, ram); self.registers.pc = 0x30; 4}, // RST 0x30
+      0xCF => {self.push(self.registers.pc, ram); self.registers.pc = 0x08; 4}, // RST 0x08
+      0xCF => {self.push(self.registers.pc, ram); self.registers.pc = 0x18; 4}, // RST 0x18
+      0xCF => {self.push(self.registers.pc, ram); self.registers.pc = 0x28; 4}, // RST 0x28
+      0xCF => {self.push(self.registers.pc, ram); self.registers.pc = 0x38; 4}, // RST 0x38
+          
       0x03 => {self.registers.set_bc(self.inc_u16(self.registers.get_bc())); 2}, // INC BC
       0x13 => {self.registers.set_de(self.inc_u16(self.registers.get_de())); 2}, // INC DE
       0x23 => {self.registers.set_hl(self.inc_u16(self.registers.get_hl())); 2}, // INC HL

@@ -32,6 +32,7 @@ impl Display
   
   pub fn draw(&mut self) {
     self.screen.clear();
+    
     for y in 0..144 {
       let mut index = y;
       for x in 0..160 {
