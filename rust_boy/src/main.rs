@@ -45,18 +45,19 @@ fn run(path: &Path) -> io::Result<()>
     }
 
     gpu.draw();
+    //gpu.update(&mut ram);
     
     let opcode = ram.get(cpu.registers.pc);
 
+    //println!{"Opcode: {:#04x}", opcode}
+    //cpu.debug();
+    
     if cpu_cicles == 0 {
       cpu_cicles += cpu.cicle(opcode, &mut ram);
     }
     
-    println!{"Opcode: {:#04x}", opcode}
-    cpu.debug();
-    
     cpu_cicles -= 1;
-    //sleep(Duration::from_secs(1));
+    sleep(Duration::from_secs(1));
 };
 
   Ok(())

@@ -1,3 +1,5 @@
+use crate::memory;
+
 // Creates displays
 use sdl2::Sdl;
 use sdl2::video::Window;
@@ -5,9 +7,11 @@ use sdl2::render::Canvas;
 use sdl2::pixels::Color as SdlColor;
 use sdl2::rect::Point;
 
+
 pub struct Display{
   screen: Canvas<Window>,
   buffer: Vec<Vec<u8>>,
+  
 }
 
 impl Display
@@ -54,4 +58,51 @@ impl Display
 
     self.screen.present();
   }
+
+  pub fn update(&mut self, ram: &mut memory::Memory)
+  {
+  
+    if (ram.get(0xFF40) & 0b1000_0000) >> 7 == 1
+    {
+      println!("Display ON");
+    }
+    else
+    {
+      println!("Display OFF");
+    
+      return;
+    }
+
+    //if (m_ScalineCounter <= 0)
+    {
+      // Move to next scanline
+      let result = match ram.get(0xFF44).checked_add(1){
+        Some(v) => v, // NO OVERFLOW
+        None    => 0, // OVERFLOW
+      };
+      
+      ram.set(0xFF44, result);
+
+    let current_line: u8 = ram.get(0xFF44);
+      //m_ScalineCounter = 456 ;
+
+      
+    println!("current scanline: {}", current_line);
+    
+     
+    if current_line > 153 
+    {
+      ram.set(0xFF44, 0);
+    } 
+    // draw the current scanline
+    else if current_line < 144
+    {
+      //draw_scanline();
+    }
+     // we have entered vertical blank period
+     //if (currentline == 144)
+     //  RequestInterupt(0) ;
+
+   }
+}
 }

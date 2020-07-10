@@ -18,14 +18,14 @@ impl Memory{
   pub fn new(cartridge: cartridge::Cartridge) -> Memory{
     Memory{
       cart:          cartridge,
-      vram:         vec![0x0; 0x2000],
-      external_ram: vec![0x0; 0x2000],
-      wram_bank0:   vec![0x0; 0x1000],
-      wram_bank1:   vec![0x0; 0x1000],
-      echo:         vec![0x0; 0x1E00],
-      oam:          vec![0x0; 0x00A0],
-      io:           vec![0x0; 0x0080],
-      hram:         vec![0x0; 0x007F],
+      vram:         vec![0xFF; 0x2000],
+      external_ram: vec![0xFF; 0x2000],
+      wram_bank0:   vec![0xFF; 0x1000],
+      wram_bank1:   vec![0xFF; 0x1000],
+      echo:         vec![0xFF; 0x1E00],
+      oam:          vec![0xFF; 0x00A0],
+      io:           vec![0xFF; 0x0080],
+      hram:         vec![0xFF; 0x007F],
       interrupt:    0x0,
     }
   }
@@ -50,6 +50,9 @@ impl Memory{
 
   /// Sets the correct position in memory
   pub fn set(&mut self, position: u16, value: u8){
+
+    if position == 0xFF46 { println!("CARALHO MERMÃO COPIA ESSA PORRA!!!!")};
+
     match position{
       0x0000 ..= 0x7FFF => self.cart.rom[position as usize] = value,
       0x8000 ..= 0x9FFF => self.vram[(position - 0x8000) as usize] = value,
